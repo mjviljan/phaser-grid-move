@@ -25,9 +25,7 @@ export class GameScene extends Phaser.Scene {
         this.player.x -= TILE_SIZE;
       } else if (this.cursors.right!.isDown) {
         this.player.x += TILE_SIZE;
-      }
-
-      if (this.cursors.up!.isDown) {
+      } else if (this.cursors.up!.isDown) {
         this.player.y -= TILE_SIZE;
       } else if (this.cursors.down!.isDown) {
         this.player.y += TILE_SIZE;

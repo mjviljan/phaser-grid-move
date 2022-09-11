@@ -1,7 +1,7 @@
 import { TILE_SIZE } from "../index";
 
 export class GameScene extends Phaser.Scene {
-  player!: Phaser.GameObjects.GameObject;
+  player!: Phaser.GameObjects.Sprite;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   #playerMoving = false;

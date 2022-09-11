@@ -11,11 +11,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("player", "assets/images/man.png");
+    this.load.image("player", "assets/images/player_05.png");
   }
 
   create() {
-    this.player = this.add.sprite(TILE_SIZE * 10.5, TILE_SIZE * 10.5, "player");
+    this.player = this.add.sprite(TILE_SIZE * 1.5, TILE_SIZE * 1.5, "player");
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 

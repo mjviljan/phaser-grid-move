@@ -1,4 +1,4 @@
-import { TILE_SIZE } from "../index";
+import { TILE_SIZE, WORLD_SIZE } from "../index";
 
 type DirectionDelta = {
   x: number,
@@ -59,7 +59,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   tryToMoveTo(dir: DirectionDelta) {
-    if (this.isDirectionBlocked(dir)) return;
+    if (this.isDirectionBlocked(dir) || this.isOutOfBound(dir)) return;
 
     this.#playerPos.x += dir.x;
     this.#playerPos.y += dir.y;
@@ -69,4 +69,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   isDirectionBlocked = (dir: DirectionDelta) => !!this.obstacleLayer.getTileAt(this.#playerPos.x + dir.x, this.#playerPos.y + dir.y);
+
+  isOutOfBound = (dir: DirectionDelta) =>
+    this.#playerPos.x + dir.x < 0 ||
+    this.#playerPos.y + dir.y < 0 ||
+    this.#playerPos.x + dir.x >= WORLD_SIZE ||
+    this.#playerPos.y + dir.y >= WORLD_SIZE;
 }

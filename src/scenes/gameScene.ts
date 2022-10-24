@@ -1,11 +1,19 @@
 import { TILE_SIZE, WORLD_SIZE } from "../index";
 
+enum MoveDirection {
+  None = 0,
+  Up = 1,
+  Right = (1 << 1),
+  Down = (1 << 2),
+  Left = (1 << 3)
+}
+
 type DirectionDelta = {
   x: number,
   y: number
 }
 
-const Direction = {
+const DirectionDeltas = {
   Up: {x: 0, y: -1},
   Right: {x: 1, y: 0},
   Down: {x: 0, y: 1},
@@ -17,8 +25,9 @@ export class GameScene extends Phaser.Scene {
   obstacleLayer!: Phaser.Tilemaps.TilemapLayer;
   cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
+  #moves: DirectionDelta[] = [];
   #playerPos = {x: 3, y: 3};
-  #playerMoving = false;
+  #playerMoving = MoveDirection.None;
 
   constructor() {
     super({key: "GameScene"});
@@ -43,19 +52,40 @@ export class GameScene extends Phaser.Scene {
   }
 
   update() {
-    if (!this.#playerMoving) {
-      if (this.cursors.left!.isDown) {
-        this.tryToMoveTo(Direction.Left)
-      } else if (this.cursors.right!.isDown) {
-        this.tryToMoveTo(Direction.Right)
-      } else if (this.cursors.up!.isDown) {
-        this.tryToMoveTo(Direction.Up)
-      } else if (this.cursors.down!.isDown) {
-        this.tryToMoveTo(Direction.Down)
-      }
+    let moveDirs = MoveDirection.None;
+
+    if (this.cursors.left!.isDown) {
+      moveDirs |= MoveDirection.Left;
+    }
+    if (this.cursors.right!.isDown) {
+      moveDirs |= MoveDirection.Right;
+    }
+    if (this.cursors.up!.isDown) {
+      moveDirs |= MoveDirection.Up;
+    }
+    if (this.cursors.down!.isDown) {
+      moveDirs |= MoveDirection.Down;
     }
 
-    this.#playerMoving = (this.cursors.left!.isDown || this.cursors.right!.isDown || this.cursors.up!.isDown || this.cursors.down!.isDown);
+    const newDir = moveDirs & ~this.#playerMoving;
+
+    if (newDir > 0) {
+      if (newDir & MoveDirection.Left)
+        this.#moves.push(DirectionDeltas.Left);
+      if (newDir & MoveDirection.Right) {
+        this.#moves.push(DirectionDeltas.Right);
+      }
+      if (newDir & MoveDirection.Up)
+        this.#moves.push(DirectionDeltas.Up);
+      if (newDir & MoveDirection.Down)
+        this.#moves.push(DirectionDeltas.Down);
+    }
+
+    if (this.#moves.length > 0) {
+      this.tryToMoveTo(this.#moves.shift() as DirectionDelta);
+    }
+
+    this.#playerMoving = moveDirs;
   }
 
   tryToMoveTo(dir: DirectionDelta) {
